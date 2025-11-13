@@ -46,9 +46,6 @@ export async function createMarkmap(
 ): Promise<CreateMarkmapResult> {
     const { content, output, openIt = false } = options;
 
-    // If no output path is provided, generate a default file path in the temp directory
-    const filePath = output || join(tmpdir(), `markmap-${randomUUID()}.html`);
-
     const transformer = new Transformer([...builtInPlugins]);
     const { root, features } = transformer.transform(content);
     const assets = transformer.getUsedAssets(features);
@@ -75,7 +72,7 @@ export async function createMarkmap(
               "position:absolute;bottom:20px;right:20px"
           );
           document.body.append(el);
-          
+
           // Ensure the mind map fits the current view
           setTimeout(() => {
             if (mm && typeof mm.fit === 'function') {
@@ -131,9 +128,9 @@ export async function createMarkmap(
       @media print {
         .mm-export-toolbar { display: none !important; }
         .mm-toolbar { display: none !important; }
-        svg.markmap, svg#mindmap, #mindmap svg { 
+        svg.markmap, svg#mindmap, #mindmap svg {
           display: block !important;
-          visibility: visible !important; 
+          visibility: visible !important;
           opacity: 1 !important;
           height: 100vh !important;
           width: 100% !important;
@@ -158,7 +155,7 @@ export async function createMarkmap(
         const exportToolbar = document.createElement('div');
         exportToolbar.className = 'mm-export-toolbar';
         document.body.appendChild(exportToolbar);
-        
+
         // Export as PNG image
         const pngBtn = document.createElement('button');
         pngBtn.className = 'mm-export-btn png-export';
@@ -178,7 +175,7 @@ export async function createMarkmap(
           exportToImage('jpeg');
         };
         exportToolbar.appendChild(jpgBtn);
-        
+
         // Export as SVG image
         const svgBtn = document.createElement('button');
         svgBtn.className = 'mm-export-btn svg-export';
@@ -204,16 +201,16 @@ export async function createMarkmap(
             if (!markdownElement) {
               throw new Error('Original Markdown content not found');
             }
-            
+
             const markdownContent = markdownElement.value;
-            
+
             // Copy to clipboard
             navigator.clipboard.writeText(markdownContent)
               .then(() => {
                 const originalText = copyBtn.innerHTML;
                 copyBtn.innerHTML = '✓ Copied';
                 copyBtn.style.backgroundColor = '#2ecc71';
-                
+
                 setTimeout(() => {
                   copyBtn.innerHTML = originalText;
                   copyBtn.style.backgroundColor = '';
@@ -233,25 +230,25 @@ export async function createMarkmap(
         function exportToImage(format) {
           try {
             const node = window.mm.svg._groups[0][0];
-            
+
             if (!node) {
               throw new Error('Cannot find mind map SVG element');
             }
 
             window.mm.fit().then(() => {
               const options = {
-                backgroundColor: "#ffffff", 
+                backgroundColor: "#ffffff",
                 quality: 1.0,
                 width: node.getBoundingClientRect().width,
                 height: node.getBoundingClientRect().height
               };
-              
-              const exportPromise = format === 'svg' 
+
+              const exportPromise = format === 'svg'
                 ? htmlToImage.toSvg(node, options)
-                : format === 'jpeg' 
-                  ? htmlToImage.toJpeg(node, options) 
+                : format === 'jpeg'
+                  ? htmlToImage.toJpeg(node, options)
                   : htmlToImage.toPng(node, options);
-              
+
               exportPromise
                 .then((dataUrl) => {
                   const link = document.createElement('a');
@@ -265,7 +262,7 @@ export async function createMarkmap(
             .catch((err) => {
                 throw err;
             });
-              
+
           } catch (e) {
             console.error('Error exporting image:', e);
             alert('Image export failed: ' + e.message);
@@ -280,14 +277,29 @@ export async function createMarkmap(
         `${toolbarCode}\n${additionalCode}\n</body>`
     );
 
-    await fs.writeFile(filePath, updatedContent);
+    let filePath = null;
+    if (output) {
+        // Only save to file if output path is explicitly provided
+        filePath = output;
+        await fs.writeFile(filePath, updatedContent);
 
-    if (openIt) {
+        if (openIt) {
+            await open(filePath);
+        }
+    } else if (openIt) {
+        // If openIt is true but no output path provided, create a temporary file
+        filePath = join(tmpdir(), `markmap-${randomUUID()}.html`);
+        await fs.writeFile(filePath, updatedContent);
         await open(filePath);
     }
 
+    // If no file was saved, generate a temporary path for reference
+    if (!filePath) {
+        filePath = join(tmpdir(), `markmap-${randomUUID()}.html`);
+    }
+
     return {
-        filePath,
-        content: updatedContent
+        filePath, // Return the intended file path for reference
+        content: updatedContent // Return the HTML content
     };
 }
