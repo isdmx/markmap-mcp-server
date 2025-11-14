@@ -2,17 +2,15 @@
 
 ![Sample Mindmap](./docs/markmap.svg)
 
-[![NPM Version](https://img.shields.io/npm/v/@jinzcdev/markmap-mcp-server.svg)](https://www.npmjs.com/package/@jinzcdev/markmap-mcp-server)
-[![GitHub License](https://img.shields.io/github/license/jinzcdev/markmap-mcp-server.svg)](LICENSE)
-[![Smithery Badge](https://smithery.ai/badge/@jinzcdev/markmap-mcp-server)](https://smithery.ai/server/@jinzcdev/markmap-mcp-server)
-[![中文文档](https://img.shields.io/badge/中文文档-点击查看-blue)](README_zh-CN.md)
-[![Stars](https://img.shields.io/github/stars/jinzcdev/markmap-mcp-server)](https://github.com/jinzcdev/markmap-mcp-server)
+[![NPM Version](https://img.shields.io/npm/v/@isdmx/markmap-mcp-server.svg)](https://www.npmjs.com/package/@isdmx/markmap-mcp-server)
+[![GitHub License](https://img.shields.io/github/license/isdmx/markmap-mcp-server.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/isdmx/markmap-mcp-server)](https://github.com/isdmx/markmap-mcp-server)
 
 Markmap MCP Server is based on the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) that allows one-click conversion of Markdown text to interactive mind maps, built on the open source project [markmap](https://github.com/markmap/markmap). The generated mind maps support rich interactive operations and can be exported in various image formats.
 
 > 🎉 **Explore More Mind Mapping Tools**
 >
-> Try [MarkXMind](https://github.com/jinzcdev/markxmind) - An online editor that creates complex mind maps using simple XMindMark syntax. It supports real-time preview, multi-format export (.xmind/.svg/.png), importing existing XMind files. [Try it now](https://markxmind.js.org/)!
+> Try [MarkXMind](https://github.com/isdmx/markxmind) - An online editor that creates complex mind maps using simple XMindMark syntax. It supports real-time preview, multi-format export (.xmind/.svg/.png), importing existing XMind files. [Try it now](https://markxmind.js.org/)!
 
 ## Features
 
@@ -24,36 +22,31 @@ Markmap MCP Server is based on the [Model Context Protocol (MCP)](https://modelc
 
 ## Prerequisites
 
-1. Node.js (v20 or above)
+1. Node.js (v25)
 
 ## Installation
-
-### Installing via Smithery
-
-To install Markmap MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@jinzcdev/markmap-mcp-server):
-
-```bash
-npx -y @smithery/cli install @jinzcdev/markmap-mcp-server --client claude
-```
 
 ### Manual Installation
 
 ```bash
 # Install from npm
-npm install @jinzcdev/markmap-mcp-server -g
+npm install @isdmx/markmap-mcp-server -g
 
 # Basic run
-npx -y @jinzcdev/markmap-mcp-server
+npx -y @isdmx/markmap-mcp-server
 
 # Specify output directory
-npx -y @jinzcdev/markmap-mcp-server --output /path/to/output/directory
+npx -y @isdmx/markmap-mcp-server --output /path/to/output/directory
+
+# Or
+markmap-mcp-server
 ```
 
 Alternatively, you can clone the repository and run locally:
 
 ```bash
 # Clone the repository
-git clone https://github.com/jinzcdev/markmap-mcp-server.git
+git clone https://github.com/isdmx/markmap-mcp-server.git
 
 # Navigate to the project directory
 cd markmap-mcp-server
@@ -72,13 +65,10 @@ Add the following configuration to your MCP client configuration file:
 ```json
 {
   "mcpServers": {
-    "markmap": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@jinzcdev/markmap-mcp-server"],
-      "env": {
-        "MARKMAP_DIR": "/path/to/output/directory"
-      }
+    "default-server": {
+      "type": "streamable-http",
+      "url": "http://localhost:3000/mcp",
+      "note": "For Streamable HTTP connections, add this URL directly in your MCP Client"
     }
   }
 }
@@ -109,12 +99,22 @@ Convert Markdown text into an interactive mind map.
 
 ```json
 {
-  "content": [
-    {
-      "type": "text",
-      "text": "JSON_DATA_OF_MINDMAP_FILEPATH"
+  "type": "object",
+  "properties": {
+    "mimeType": {
+      "type": "string",
+      "description": "MIME type of the generated content",
+      "example": "text/html"
+    },
+    "contentLength": {
+      "type": "number",
+      "description": "Length of the HTML content"
+    },
+    "html": {
+      "type": "string",
+      "description": "HTML content"
     }
-  ]
+  }
 }
 ```
 

@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 
 # Create app directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY tsconfig.json ./
 RUN npm run build
 
 # Use Node.js 20 Alpine as the base image for the runtime stage
-FROM node:20-alpine AS runner
+FROM node:25-alpine AS runner
 
 # Set the working directory for the runtime stage
 WORKDIR /app
@@ -26,10 +26,8 @@ WORKDIR /app
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/build ./build
 
-RUN npm install --ignore-scripts --omit=dev
+RUN mkdir -p /tmp && npm install --ignore-scripts --omit=dev
 
-# Define environment variable for markmap data directory
-ENV MARKMAP_DIR=/data/markmap
 
 # Define the command to run when the container starts
 ENTRYPOINT ["node", "build/index.js"]
