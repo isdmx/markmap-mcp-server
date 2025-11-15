@@ -1,5 +1,4 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { join } from "path";
 import { z } from "zod";
 import { createMarkmap } from "../../markmap/createMarkmap.js";
 import { MarkmapMcpContext } from "./context.js";
@@ -7,71 +6,34 @@ import { ToolRegistry } from "./tool-registry.js";
 
 export class MarkmapToolRegistry extends ToolRegistry {
     public register(): void {
-        this.server.tool(
+        this.server.registerTool(
             "markdown_to_mindmap",
-            "Convert a Markdown document into an interactive mind map",
-            {
-                markdown: z
-                    .string()
-                    .describe("Markdown content to convert into a mind map"),
-                open: z
-                    .boolean()
-                    .default(false)
-                    .describe(
-                        "Whether to open the generated mind map in a browser (default: false)"
-                    )
-            },
             {
                 title: "Markdown to Mind Map Converter",
-                description: "Converts Markdown content to an interactive HTML mind map with export capabilities",
-                outputDescription: "Returns structured content with HTML mind map and metadata. The response includes the HTML content of the mind map and metadata about the generated content.",
-                outputSchema: {
-                    type: "object",
-                    properties: {
-                        content: {
-                            type: "array",
-                            description: "Array of content items in the response",
-                            items: {
-                                type: "object",
-                                oneOf: [
-                                    {
-                                        type: "object",
-                                        properties: {
-                                            type: "string",
-                                            const: "text"
-                                        },
-                                        required: ["type", "text"]
-                                    }
-                                ],
-                                description: "Content item with type and text"
-                            }
-                        },
-                        _meta: {
-                            type: "object",
-                            description: "Metadata about the generated content",
-                            properties: {
-                                mimeType: {
-                                    type: "string",
-                                    description: "MIME type of the generated content",
-                                    example: "text/html"
-                                },
-                                contentLength: {
-                                    type: "number",
-                                    description: "Length of the HTML content"
-                                },
-                                hasHtmlContent: {
-                                    type: "boolean",
-                                    description: "Indicates that HTML content is present in the response"
-                                }
-                            },
-                            required: ["mimeType", "contentLength", "hasHtmlContent"]
-                        }
-                    },
-                    required: ["content", "_meta"],
-                    description: "Structured response containing the generated mind map HTML content and metadata"
-                }
+                description:
+                    "Converts Markdown content to an interactive HTML mind map",
+                inputSchema: z.object({
+                    markdown: z
+                        .string()
+                        .describe("Markdown content to convert into a mind map")
+                }),
+                outputSchema: z.object({
+                    html: z
+                        .string()
+                        .describe("HTML content of the generated mind map"),
+                    contentLength: z
+                        .number()
+                        .describe("Length of the HTML content"),
+                    success: z
+                        .boolean()
+                        .describe("Whether the conversion was successful"),
+                    error: z
+                        .string()
+                        .optional()
+                        .describe("Error message if conversion failed")
+                })
             },
-            async ({ markdown, open }: { markdown: string; open: boolean }) => {
+            async ({ markdown }: { markdown: string }) => {
                 try {
                     // Don't save to file, just generate the HTML content
                     const result = await createMarkmap({
@@ -86,15 +48,10 @@ export class MarkmapToolRegistry extends ToolRegistry {
                                 text: result.content // Text content for compatibility
                             }
                         ],
-                        structuredContent: { // Associative array/object containing the HTML data
+                        structuredContent: {
                             html: result.content,
-                            mimeType: "text/html",
-                            contentLength: result.content.length
-                        },
-                        _meta: {
-                            mimeType: "text/html",
                             contentLength: result.content.length,
-                            hasHtmlContent: true
+                            success: true
                         }
                     };
                 } catch (error: any) {
@@ -105,13 +62,8 @@ export class MarkmapToolRegistry extends ToolRegistry {
                                 text: `Error: ${error.message}`
                             }
                         ],
-                        structuredContent: { // Associative array/object for error case
+                        structuredContent: {
                             error: error.message,
-                            success: false
-                        },
-                        _meta: {
-                            error: "Failed to generate markmap",
-                            message: error.message,
                             success: false
                         }
                     };

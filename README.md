@@ -74,6 +74,39 @@ Add the following configuration to your MCP client configuration file:
 }
 ```
 
+Install inspector `@modelcontextprotocol/inspector`
+
+```bash
+npm install -g @modelcontextprotocol/inspector
+```
+
+List tools with inspector
+
+```bash
+mcp-inspector --cli --transport http --method tools/list --server-url --target http://localhost:3000/mcp
+```
+
+Call `markdown-to-mindmap` tool
+
+```bash
+mcp-inspector --cli --transport http --method tools/call --server-url --target http://localhost:3000/mcp --tool-name markdown_to_mindmap --tool-arg markdown="
+# header 1
+## Header 1.1
+- [x] ul 1
+- [ ] ul 2
+- [ ] ul 3
+## Header 1.2
+- bullet 1
+- bullet 2
+## Header 1.3
+### Header 1.3.1
+### Header 1.3.2
+1. ol 1
+2. ol 2
+3. ol 3
+"
+```
+
 > [!TIP]
 >
 > The service supports the following environment variables:

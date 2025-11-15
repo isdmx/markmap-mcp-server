@@ -1,7 +1,7 @@
 {
     "name": "@isdmx/markmap-mcp-server",
     "description": "MCP server for converting Markdown to interactive mind maps with export support (PNG/JPG/SVG)",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "author": "isdmx",
     "main": "./build/index.js",
     "keywords": [
