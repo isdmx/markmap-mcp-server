@@ -81,6 +81,15 @@ export async function createMarkmap(
           }, 1200);
       });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mmLinkElement = document.querySelector('.mm-toolbar-brand');
+
+            if (mmLinkElement) {
+                mmLinkElement.setAttribute('target', '_blank');
+            }
+        });
+    </script>
   `;
 
     // Add scripts and styles for additional features
