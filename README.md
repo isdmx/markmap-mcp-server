@@ -107,16 +107,6 @@ mcp-inspector --cli --transport http --method tools/call --server-url --target h
 "
 ```
 
-> [!TIP]
->
-> The service supports the following environment variables:
->
-> - `MARKMAP_DIR`: Specify the output directory for mind maps (optional, defaults to system temp directory)
->
-> **Priority Note**:
->
-> When both the `--output` command line argument and the `MARKMAP_DIR` environment variable are specified, the command line argument takes precedence.
-
 ## Available Tools
 
 ### markdown-to-mindmap
@@ -126,28 +116,51 @@ Convert Markdown text into an interactive mind map.
 **Parameters:**
 
 - `markdown`: The Markdown content to convert (required string)
-- `open`: Whether to automatically open the generated mind map in the browser (optional boolean, default is false)
 
 **Return Value:**
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "mimeType": {
-      "type": "string",
-      "description": "MIME type of the generated content",
-      "example": "text/html"
-    },
-    "contentLength": {
-      "type": "number",
-      "description": "Length of the HTML content"
-    },
-    "html": {
-      "type": "string",
-      "description": "HTML content"
+  "tools": [
+    {
+      "name": "markdown_to_mindmap",
+      "title": "Markdown to Mind Map Converter",
+      "description": "Converts Markdown content to an interactive HTML mind map",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "markdown": {
+            "type": "string",
+            "description": "Markdown content to convert into a mind map"
+          }
+        },
+        "required": ["markdown"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "html": {
+            "type": "string",
+            "description": "HTML content of the generated mind map"
+          },
+          "contentLength": {
+            "type": "number",
+            "description": "Length of the HTML content"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the conversion was successful"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message if conversion failed"
+          }
+        },
+        "required": ["html", "contentLength", "success"],
+        "additionalProperties": false
+      }
     }
-  }
+  ]
 }
 ```
 

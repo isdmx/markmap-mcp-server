@@ -310,6 +310,17 @@ async function main() {
         }));
     });
 
+    server.on("error", (error) => {
+        const timestamp = new Date().toISOString();
+        logger.error(JSON.stringify({
+            timestamp,
+            level: "error",
+            event: "server_start_error",
+            message: "Error starting Markmap MCP Server",
+            error: error instanceof Error ? error.message : String(error)
+        }));
+    });
+
     // Handle server shutdown
     process.on("SIGINT", async () => {
         const timestamp = new Date().toISOString();
