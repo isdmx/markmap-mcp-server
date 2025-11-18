@@ -168,8 +168,8 @@ export async function createMarkmap(
         // Export as PNG image
         const pngBtn = document.createElement('button');
         pngBtn.className = 'mm-export-btn png-export';
-        pngBtn.innerHTML = 'Export PNG';
-        pngBtn.title = 'Export as PNG image';
+        pngBtn.innerHTML = 'Экспорт в PNG';
+        pngBtn.title = 'Экспорт PNG изображения';
         pngBtn.onclick = () => {
           exportToImage('png');
         };
@@ -178,8 +178,8 @@ export async function createMarkmap(
         // Export as JPG image
         const jpgBtn = document.createElement('button');
         jpgBtn.className = 'mm-export-btn jpg-export';
-        jpgBtn.innerHTML = 'Export JPG';
-        jpgBtn.title = 'Export as JPG image';
+        jpgBtn.innerHTML = 'Экспорт в JPG';
+        jpgBtn.title = 'Экспорт JPG изображения';
         jpgBtn.onclick = () => {
           exportToImage('jpeg');
         };
@@ -188,8 +188,8 @@ export async function createMarkmap(
         // Export as SVG image
         const svgBtn = document.createElement('button');
         svgBtn.className = 'mm-export-btn svg-export';
-        svgBtn.innerHTML = 'Export SVG';
-        svgBtn.title = 'Export as SVG image';
+        svgBtn.innerHTML = 'Экспорт в SVG';
+        svgBtn.title = 'Экспорт SVG изображения';
         svgBtn.onclick = () => {
           exportToImage('svg');
         };
@@ -198,8 +198,8 @@ export async function createMarkmap(
         // Copy original Markdown button
         const copyBtn = document.createElement('button');
         copyBtn.className = 'mm-export-btn mm-copy-btn copy-markdown';
-        copyBtn.innerHTML = 'Copy Markdown';
-        copyBtn.title = 'Copy original Markdown content';
+        copyBtn.innerHTML = 'Скопировать Markdown';
+        copyBtn.title = 'Скопировать оригинальный Markdown';
         copyBtn.onclick = copyOriginalMarkdown;
         exportToolbar.appendChild(copyBtn);
 
@@ -208,7 +208,7 @@ export async function createMarkmap(
           try {
             const markdownElement = document.getElementById('original-markdown');
             if (!markdownElement) {
-              throw new Error('Original Markdown content not found');
+              throw new Error('Отсутствует Markdown для копирования');
             }
 
             const markdownContent = markdownElement.value;
@@ -227,11 +227,11 @@ export async function createMarkmap(
               })
               .catch(err => {
                 console.error('Copy failed:', err);
-                alert('Failed to copy to clipboard, please check browser permissions');
+                alert('Не удалось скопировать в буфер обмена. Проверьте наличие доступа');
               });
           } catch (e) {
-            console.error('Error copying Markdown:', e);
-            alert('Unable to copy Markdown: ' + e.message);
+            console.error('Ошибка при копировании Markdown:', e);
+            alert('Не удалось скопировать Markdown: ' + e.message);
           }
         }
 
@@ -241,7 +241,7 @@ export async function createMarkmap(
             const node = window.mm.svg._groups[0][0];
 
             if (!node) {
-              throw new Error('Cannot find mind map SVG element');
+              throw new Error('SVG элемент не найден');
             }
 
             window.mm.fit().then(() => {
@@ -273,8 +273,8 @@ export async function createMarkmap(
             });
 
           } catch (e) {
-            console.error('Error exporting image:', e);
-            alert('Image export failed: ' + e.message);
+            console.error('Ошибка при экспорте изображения:', e);
+            alert('Ошибка экспорта изображения: ' + e.message);
           }
         }
       })();
